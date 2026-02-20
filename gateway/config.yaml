@@ -1,0 +1,28 @@
+upstream:
+  base_url: "http://127.0.0.1:9000"
+  api_key: "dev-upstream-key"
+
+jwt:
+  access_secret: "dev-access-secret"
+  refresh_secret: "dev-refresh-secret"
+
+ctx:
+  secret: "dev-ctx-secret"
+
+auth:
+  issuer: "ra-cbt-gateway"
+  audience: "ra-cbt-clients"
+  ttl_seconds: 600
+  users:
+    test-user-key:
+      user_id: "user_001"
+      plan: "pro"
+      scope: "chat:completions"
+      model_allow: ["gpt-4o-mini", "gpt-4.1-mini"]
+      tool_allow: ["search", "calculator"]
+      budget:
+        rpm: 60
+        tpm: 120000
+        burst: 10
+
+request_timeout: 10.0
