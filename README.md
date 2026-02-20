@@ -4,9 +4,9 @@ Production-quality Python scaffold for the RA-CBT gateway project.
 
 ## Layout
 
-- `gateway/`: FastAPI app, config, JWT/DPoP verification, and upstream proxy modules
+- `gateway/`: FastAPI app, config, JWT/DPoP verification, context binding, and proxy modules
 - `client/`: local OpenAI-compatible client + DPoP helpers
-- `scripts/`: scenario/benchmark script placeholders and `demo_dpop.py`
+- `scripts/`: scenario/benchmark placeholders and `demo_dpop.py`
 - `experiments/`: experiment assets and outputs
 - `tests/`: pytest test suite
 
@@ -18,26 +18,10 @@ make test
 make lint
 ```
 
-Run server:
+## Context tolerance policy
 
-```bash
-make run
-# or
-uvicorn gateway.app:app --reload
-```
-
-## Configuration
-
-Configuration lives in `gateway/config.yaml` and supports env var overrides:
-
-- `RA_CBT_UPSTREAM_BASE_URL`
-- `RA_CBT_UPSTREAM_API_KEY`
-- `RA_CBT_JWT_ACCESS_SECRET`
-- `RA_CBT_CTX_SECRET`
-- `RA_CBT_AUTH_ISSUER`
-- `RA_CBT_AUTH_AUDIENCE`
-- `RA_CBT_AUTH_TTL_SECONDS`
-- `RA_CBT_REQUEST_TIMEOUT`
+Context policy is defined in `gateway/policy/default.yaml` (same ASN/country, UA minor tolerance).  
+Server always binds observed fields (`ip`, `ua`, optional `asn/country`) and compares runtime context to CBAT `ctx_hash` with tolerance fallback.
 
 ## API examples
 
@@ -46,13 +30,21 @@ Exchange API key for CBAT:
 ```bash
 curl -s -X POST http://127.0.0.1:8000/auth/exchange \
   -H 'X-API-Key: test-user-key' \
+  -H 'X-Forwarded-For: 10.1.1.1' \
+  -H 'User-Agent: Browser/120.1' \
   -H 'Content-Type: application/json' \
   -d '{"client_jwk":{"kty":"oct","k":"demo-key"},"ctx":{"tenant":"acme"}}'
 ```
 
-Call protected chat endpoint using CBAT + DPoP:
+Ctx drift example (allowed same-ASN drift):
 
 ```bash
-# see scripts/demo_dpop.py for end-to-end local flow
+# First token issued from 10.x (AS64512), then call from 11.x (also AS64512)
+# with minor UA change; request remains accepted by tolerance policy.
+```
+
+End-to-end local demo:
+
+```bash
 python scripts/demo_dpop.py
 ```

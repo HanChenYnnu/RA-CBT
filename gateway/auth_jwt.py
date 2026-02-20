@@ -116,6 +116,7 @@ def mint_cbat(
     jkt: str,
     secret: str,
     audience: str | None = None,
+    extra_claims: dict[str, Any] | None = None,
 ) -> tuple[str, dict[str, Any]]:
     iat = int(time.time())
     claims: dict[str, Any] = {
@@ -133,4 +134,6 @@ def mint_cbat(
     }
     if audience:
         claims["aud"] = audience
+    if extra_claims:
+        claims.update(extra_claims)
     return sign_jwt(claims, secret), claims
