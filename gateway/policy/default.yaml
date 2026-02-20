@@ -1,0 +1,5 @@
+tolerance:
+  allow_same_asn: true
+  allow_same_country: true
+  allow_ua_minor: true
+  require_geo: false
