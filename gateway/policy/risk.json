@@ -1,0 +1,14 @@
+{
+  "weights": {
+    "f_asn_change": 0.30,
+    "f_country_change": 0.20,
+    "f_device_change": 0.10,
+    "f_ua_major_change": 0.15,
+    "f_rpm_ratio": 0.05,
+    "f_tpm_ratio": 0.10,
+    "f_bucket_pressure": 0.10
+  },
+  "tau_allow": 0.45,
+  "tau_deny": 0.80,
+  "k": 1.20
+}

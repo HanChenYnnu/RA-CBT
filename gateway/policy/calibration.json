@@ -1,0 +1,5 @@
+{
+  "tau_allow": 0.45,
+  "tau_deny": 0.80,
+  "source": "default"
+}
